@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings
 from django.contrib.sessions.models import Session
+from django.contrib.auth.signals import user_logged_in
 from django.utils.translation import ugettext_lazy as _
 
 
