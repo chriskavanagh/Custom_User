@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings
+from django.contrib.sessions.models import Session
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -75,30 +76,30 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         "Returns the short name for the user."
         return self.first_name
-        
-    # @property    
-    # def is_staff(self):
-        # "Is the user a member of staff?"
-        # # Simplest possible answer: All admins are staff
-        # return self.is_admin
 
     def email_user(self, subject, message, from_email, to_email, **kwargs):
         send_mail(subject, message, from_email, [to_email], fail_silently=False)
         
         
-################ Signals ################
-                      
+        
+class UserSession(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    session = models.ForeignKey(Session)
+        
+        
+################ Signals ################                      
 
 @receiver(post_save, sender=CustomUser)
 def send_user_mail(sender, created, instance, **kwargs):
     if created:
         user = CustomUser.objects.get(pk=instance.pk)
-        subject = "Welcome!"
+        subject = "Welcome To Our Community!"
         from_email = settings.EMAIL_HOST_USER
         to_email = user.email
         message = "Thank You For Joining Our Django Powered Site!"
         #user.email_user(subject, message, from_email, [to_email], fail_silently=False)
         send_mail(subject, message, from_email, [to_email,], fail_silently=False)
+        print "Email Sent To %s" % user.email    # print email address to cmd line
         
         
         
