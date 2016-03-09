@@ -3,10 +3,10 @@ from django.db.models import Q
 
 
 class CustomUserAuth(object):
-    """authentication for custom user."""
+    """authentication for custom user. user can login with username OR email."""
     def authenticate(self, username=None, password=None):
         try:
-            user = CustomUser.objects.get(email=username)
+            user = CustomUser.objects.get(Q(first_name=username)| Q(email=username))
             if user.check_password(password):
                 return user
         except CustomUser.DoesNotExist:
@@ -23,28 +23,24 @@ class CustomUserAuth(object):
             
             
             
-
-## using username OR email OR phone to log user in.
-
-# class AuthBackend(object):
-    # supports_object_permissions = True
-    # supports_anonymous_user = False
-    # supports_inactive_user = False
-
-
-    # def get_user(self, user_id):
-       # try:
-          # return UserProfile.objects.get(pk=user_id)
-       # except UserProfile.DoesNotExist:
-          # return None
-
-
-    # def authenticate(self, username, password):
+            
+            
+## original code using only email to login.
+# class CustomUserAuth(object):
+    # """authentication for custom user."""
+    # def authenticate(self, username=None, password=None):
         # try:
-            # user = UserProfile.objects.get(
-                # Q(username=username) | Q(email=username) | Q(phone=username)
-            # )
-        # except UserProfile.DoesNotExist:
+            # user = CustomUser.objects.get(email=username)
+            # if user.check_password(password):
+                # return user
+        # except CustomUser.DoesNotExist:
             # return None
-
-        # return user if user.check_password(password) else None
+            
+    # def get_user(self, user_id):
+        # try:
+            # user = CustomUser.objects.get(pk=user_id)
+            # if user.is_active:
+                # return user
+            # return None
+        # except CustomUser.DoesNotExist:
+            # return None
