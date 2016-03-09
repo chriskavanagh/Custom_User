@@ -1,17 +1,22 @@
 from __future__ import unicode_literals
 from django.db import models
+
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.mail import send_mail
+
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+
 from django.conf import settings
 from django.contrib.sessions.models import Session
+
 from django.contrib.auth.signals import user_logged_in
 from django.utils.translation import ugettext_lazy as _
 
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-# Create your models here.
+
+############ Custom User Manager ############
 class CustomUserManager(BaseUserManager):
     """creates a custom user that uses email instead of username for logging in."""
     
@@ -39,6 +44,7 @@ class CustomUserManager(BaseUserManager):
         
         
         
+############ Custom User Model ############ 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """the customer user class."""
     
@@ -82,13 +88,25 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [to_email], fail_silently=False)
         
         
+###################### UserSession Model ######################
         
 class UserSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     session = models.ForeignKey(Session)
+    
+    
         
         
-################ Signals ################                      
+##------------------------ Signals --------------------------##
+
+def user_session_handler(sender, request, user, **kwargs):
+    UserSession.objects.get_or_create(user=user, session_id = request.session.session_key)
+    
+    
+user_logged_in.connect(user_session_handler)
+
+
+#------------------------ email signal --------------------------#
 
 @receiver(post_save, sender=CustomUser)
 def send_user_mail(sender, created, instance, **kwargs):

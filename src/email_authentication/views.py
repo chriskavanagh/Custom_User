@@ -3,6 +3,7 @@ from custom_user.admin import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+#from .models import UserSession
 #from custom_user.forms import CustomUserCreationForm
 
 
@@ -60,4 +61,11 @@ def register_user(request):
 
 def register_success(request):
     return render(request, 'register_success.html', {})
+    
+    
+# find & del user session(s) by UserSession in models.py    
+def delete_user_sessions(user):
+    user_sessions = UserSession.objects.filter(user = user)
+    for user_session in user_sessions:
+        user_session.session.delete()
     
