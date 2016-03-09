@@ -3,7 +3,7 @@ from custom_user.admin import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-#from .models import UserSession
+from custom_user.models import UserSession
 #from custom_user.forms import CustomUserCreationForm
 
 
