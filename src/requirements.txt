@@ -1,0 +1,6 @@
+Django==1.9.3
+django-crispy-forms==1.6.0
+django-extensions==1.6.1
+django-model-utils==2.4
+pytz==2015.7
+six==1.10.0

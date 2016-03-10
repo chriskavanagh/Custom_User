@@ -20,8 +20,8 @@ def my_login(request):
     
     
 def auth_view(request):
-    username = request.POST.get('username', '')
-    password = request.POST.get('password', '')
+    username = request.POST.get('username', None)
+    password = request.POST.get('password', None)
     user = authenticate(username=username, password=password)
     
     if user is not None and user.is_active:

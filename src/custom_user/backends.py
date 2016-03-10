@@ -6,7 +6,7 @@ class CustomUserAuth(object):
     """authentication for custom user. user can login with username OR email."""
     def authenticate(self, username=None, password=None):
         try:
-            user = CustomUser.objects.get(Q(first_name=username)| Q(email=username))
+            user = CustomUser.objects.get(Q(username=username)| Q(email=username))
             if user.check_password(password):
                 return user
         except CustomUser.DoesNotExist:

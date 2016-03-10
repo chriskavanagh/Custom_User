@@ -1,10 +1,13 @@
 from django import forms
 from django.contrib import admin
+
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from models import CustomUser
+
+# Admin Login = ckava1@msn.com
 
 
 
@@ -16,7 +19,7 @@ class UserCreationForm(forms.ModelForm):
     
     class Meta:
         model = CustomUser
-        fields = ('email',)
+        fields = ('username', 'email',)
         
     def clean_password2(self):
         # Check that the two password entries match
@@ -44,7 +47,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'password', 'is_active', 'is_staff')
+        fields = ('username', 'email', 'password', 'is_active', 'is_staff')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -61,7 +64,7 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'first_name', 'last_name', 'date_joined', 'is_staff', 'is_active')
+    list_display = ('username','email', 'first_name', 'last_name', 'date_joined', 'is_staff', 'is_active')
     list_filter = ('is_admin',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),

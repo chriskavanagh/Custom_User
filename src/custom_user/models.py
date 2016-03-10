@@ -1,19 +1,24 @@
 from __future__ import unicode_literals
 from django.db import models
-
 from django.utils import timezone
 from django.core.mail import send_mail
-
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-
 from django.conf import settings
 from django.contrib.sessions.models import Session
-
 from django.contrib.auth.signals import user_logged_in
 from django.utils.translation import ugettext_lazy as _
-
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+
+
+
+class TimeStampedModel(models.Model):
+    """An abstract base class which provides self updating."""
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        abstract = True
 
 
 ############ Custom User Manager ############
@@ -22,6 +27,9 @@ class CustomUserManager(BaseUserManager):
     
     def _create_user(self, email, password, is_admin, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
+        
+        if not username:
+            raise ValueError('You Must Provide A Valid Username')
         
         if not email:
             raise ValueError('You Must Provide A Valid Email')
@@ -48,6 +56,7 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """the customer user class."""
     
+    username    = models.CharField(max_length=254, unique=True)    
     email       = models.EmailField(blank=True, unique=True)
     first_name  = models.CharField(max_length=254, blank=True)
     last_name = models.CharField(max_length=254, blank=True)
@@ -62,7 +71,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     #is_superuser = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name',]
+    REQUIRED_FIELDS = ['username',]
     
     objects = CustomUserManager()
     
@@ -88,8 +97,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [to_email], fail_silently=False)
         
         
-###################### UserSession Model ######################
         
+        
+
+## UserSession Model       
 class UserSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     session = models.ForeignKey(Session)

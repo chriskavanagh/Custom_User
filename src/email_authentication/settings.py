@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'custom_user',
+    'django_extensions',
 ]
 
 
@@ -70,7 +71,7 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'custom_user.CustomUser'
 
-AUTHENTICATION_BACKENDS = ('custom_user.backends.CustomUserAuth',)
+AUTHENTICATION_BACKENDS = ('custom_user.backends.CustomUserAuth', 'django.contrib.auth.backends.ModelBackend')
 
 ## ## ## ##
 
