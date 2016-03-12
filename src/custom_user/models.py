@@ -11,6 +11,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
+      
+class UserSession(models.Model):
+    """Model to keep track of user sessions."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    session = models.ForeignKey(Session)
+
 
 class TimeStampedModel(models.Model):
     """An abstract base class which provides self updating."""
@@ -19,11 +25,11 @@ class TimeStampedModel(models.Model):
     
     class Meta:
         abstract = True
-
-
+        
+        
 ############ Custom User Manager ############
 class CustomUserManager(BaseUserManager):
-    """creates a custom user that uses email instead of username for logging in."""
+    """manager for custom user model that uses email instead of username for logging in."""
     
     def _create_user(self, email, password, is_admin, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
@@ -48,13 +54,12 @@ class CustomUserManager(BaseUserManager):
         return self._create_user(email, password, False, False, **extra_fields)
         
     def create_superuser(self, email, password, **extra_fields):
-        return self._create_user(email, password, True, True, True, **extra_fields)
+        return self._create_user(email, password, True, True, True, **extra_fields)        
+  ############ End Custom User Manager ############
+  
         
-        
-        
-############ Custom User Model ############ 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    """the customer user class."""
+    """the customer user model class."""
     
     username    = models.CharField(max_length=254, unique=True)    
     email       = models.EmailField(blank=True, unique=True)
@@ -96,15 +101,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message, from_email, to_email, **kwargs):
         send_mail(subject, message, from_email, [to_email], fail_silently=False)
         
-        
-        
-        
 
-## UserSession Model       
-class UserSession(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    session = models.ForeignKey(Session)
-    
+        
+  
     
         
         
@@ -137,7 +136,7 @@ def send_user_mail(sender, created, instance, **kwargs):
 # created: a boolean indicating if a new User has been created
 # instance: the User instance being saved
 
-################ End Signals ################
+##------------------------ End Signals --------------------------##
         
         
 
